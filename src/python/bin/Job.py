@@ -6,7 +6,7 @@ from validations import get_curr_date
 from preprocessing import perform_data_clean_csv  # import the function instead of the class
 from preprocessing import perform_data_clean_parquet
 import logging.config
-
+from pyspark.sql.functions import current_date, lit
 logging.config.fileConfig(fname='../util/logging_to_file.conf')
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,10 @@ def main() -> None:
                 print("Displaying cleaned CSV DataFrame:")
                 df_clean_csv.show()
                 df_clean_csv.printSchema()
+                df_distinct_parquet = df_clean_csv.select("country_name").distinct()
+                print("Displaying distinct countries from cleaned Parquet DataFrame:")
+                df_distinct_parquet.show()
+
                 logger.info(f"Data cleaning completed for csv DataFrame")
         except Exception as e:
             logger.error(f"An error occurred during data cleaning for DataFrame: {df_csv}. Error details: {str(e)}")
@@ -39,6 +43,7 @@ def main() -> None:
                 print("Displaying cleaned parquet DataFrame:")
                 df_clean_parquet.show()
                 df_clean_parquet.printSchema()
+
                 logger.info(f"Data cleaning completed for DataFrame: ")
         except Exception as e:
             logger.error(f"An error occurred during data cleaning for DataFrame: {df_parquet}. Error details: {str(e)}")

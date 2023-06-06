@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import upper, lit
 import logging
 import logging.config
+from pyspark.sql.functions import current_date, lit
 from pyspark.sql.functions import upper, lit, regexp_extract, col, concat_ws, count, isnan, when, avg, round, coalesce
 from pyspark.sql.window import Window
 
@@ -21,7 +22,7 @@ def perform_data_clean_csv(spark: SparkSession, df: DataFrame) -> DataFrame:
                              df.total_drug_cost)
     df_clean_csv = df_clean_csv.withColumn("country_name", lit("USA"))
     # 3 Add a Country Field 'USA'
-    df_clean_csv = df_clean_csv.withColumn("country_name", lit("USA"))
+
 
     # 4 Clean years_of_exp field
     pattern = '\d+'
@@ -51,6 +52,8 @@ def perform_data_clean_csv(spark: SparkSession, df: DataFrame) -> DataFrame:
     # Check and clean all the Null/Nan Values
     df_clean_csv.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_clean_csv.columns])
     df_clean_csv = df_clean_csv.withColumn("current_date", lit(current_date()))
+    new_columns = ["current_date"] + df_clean_csv.columns[:-1]
+    df_clean_csv = df_clean_csv.select(*new_columns)
 
     return df_clean_csv
 
@@ -62,5 +65,8 @@ def perform_data_clean_parquet(spark: SparkSession, df1: DataFrame) -> DataFrame
                                   upper(df1.county_name).alias("county_name"),
                                   df1.population,
                                   df1.zips)
+
     df_clean_parquet = df_clean_parquet.withColumn("current_date", lit(current_date()))
+    new_columns = ["current_date"] + df_clean_parquet.columns[:-1]
+    df_clean_parquet = df_clean_parquet.select(*new_columns)
     return df_clean_parquet
