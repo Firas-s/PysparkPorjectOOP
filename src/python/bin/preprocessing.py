@@ -50,6 +50,7 @@ def perform_data_clean_csv(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Check and clean all the Null/Nan Values
     df_clean_csv.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_clean_csv.columns])
+    df_clean_csv = df_clean_csv.withColumn("current_date", lit(current_date()))
 
     return df_clean_csv
 
@@ -61,4 +62,5 @@ def perform_data_clean_parquet(spark: SparkSession, df1: DataFrame) -> DataFrame
                                   upper(df1.county_name).alias("county_name"),
                                   df1.population,
                                   df1.zips)
+    df_clean_parquet = df_clean_parquet.withColumn("current_date", lit(current_date()))
     return df_clean_parquet
