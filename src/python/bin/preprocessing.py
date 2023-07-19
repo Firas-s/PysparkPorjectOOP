@@ -56,7 +56,7 @@ def perform_data_clean_csv(spark: SparkSession, df: DataFrame) -> DataFrame:
     df_clean_csv = df_clean_csv.select(*new_columns)
 
     return df_clean_csv
-
+#ffffffffffffffffff
 
 def perform_data_clean_parquet(spark: SparkSession, df1: DataFrame) -> DataFrame:
     df_clean_parquet = df1.select(upper(df1.city).alias("city"),
